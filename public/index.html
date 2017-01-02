@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Web Interface</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-socket-io/0.7.0/socket.min.js"></script>
+		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.4.0/ui-bootstrap-tpls.min.js"></script>
+		<script src="js/app.js"></script>
+		<style>
+			body {margin-top: 20px;}
+		</style>
+	</head>
+	<body ng-app="app">
+		<div class="container-fluid" ng-controller="MainCtrl">
+			<div class="row">
+				<div class="col-sm-12 col-lg-3">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">AutoHome</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row" ng-repeat="device in devices" style="margin-bottom:5px">
+								<div class="col-xs-5" style="margin-top:10px">{{device.name}}</div>
+								<div class="col-xs-7 text-right">
+									<div class="btn-group">
+										<label class="btn btn-lg" ng-model="device.state" uib-btn-radio="false" ng-change="onDeviceChange(device)" ng-class="{'btn-default':device.state, 'btn-primary':!device.state}">Off</label>
+										<label class="btn btn-lg" ng-model="device.state" uib-btn-radio="true"  ng-change="onDeviceChange(device)" ng-class="{'btn-primary':device.state, 'btn-default':!device.state}">On</label>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

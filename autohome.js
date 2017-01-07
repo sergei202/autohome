@@ -27,7 +27,7 @@ function getDeviceById(id) {
 }
 
 function getDeviceList() {
-	 return devices.filter(d => (d.relay || d.led)).map(device => {
+	 return devices.filter(d => (d.output)).map(device => {
 		return {
 			id: device.id,
 			name: device.name,
@@ -38,11 +38,31 @@ function getDeviceList() {
 
 board.on('ready', () => {
 	var relays = new five.Relays([4,5,6,7]);
-	getDeviceById('lamp').relay = relays[0];
-	getDeviceById('closet').relay = relays[1];
+	getDeviceById('lamp').output = relays[0];
+	getDeviceById('closet').output = relays[1];
 	// relays.open();
 	var led = new five.Led(11);
-	getDeviceById('night').led = led;
+	getDeviceById('night').output = led;
+
+	var cds = new five.Sensor({
+		pin: 'A0',
+		freq: 250,
+		threshold: 3
+	});
+	cds.on('change', () => {
+		var value =  cds.fscaleTo(0,1);
+		console.log('cds: %j', value);
+		io.emit('cds', value);
+	});
+
+	var button = new five.Button({pin:8, isPullup:true});
+	button.on('press', () => {
+		console.log('button press');
+		led.toggle();
+		getDeviceById('night').state = led.isOn;
+		io.emit('devices', getDeviceList());
+	});
+
 	// led.on();
 	io.emit('devices', getDeviceList());
 });
@@ -59,11 +79,8 @@ io.on('connection', socket => {
 		var device = getDeviceById(data.id);
 		if(!device) return;
 		device.state = data.state;
-		if(device.relay) {
-			if(data.state) device.relay.on(); else device.relay.off();
-		}
-		if(device.led) {
-			if(data.state) device.led.on(); else device.led.off();
+		if(device.output) {
+			if(data.state) device.output.on(); else device.output.off();
 		}
 		io.emit('devices', getDeviceList());
 	});

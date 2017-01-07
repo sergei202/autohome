@@ -19,6 +19,10 @@ angular.module('app').controller('MainCtrl', function($scope, socket) {
 		$scope.devices = devices;
 	});
 
+	socket.on('cds', value => {
+		$scope.lightLevel = 1-value;
+	});
+
 	$scope.onDeviceChange = function(device) {
 		console.log('onDeviceChange: %o', device);
 		socket.emit('device-state', {id:device.id, state:device.state});

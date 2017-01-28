@@ -47,12 +47,22 @@ board.on('ready', () => {
 	var cds = new five.Sensor({
 		pin: 'A0',
 		freq: 250,
-		threshold: 3
+		threshold: 10
 	});
 	cds.on('change', () => {
 		var value =  cds.fscaleTo(0,1);
 		console.log('cds: %j', value);
 		io.emit('cds', value);
+		if(value>=0.9) {
+			led.on();
+			getDeviceById('night').state = led.isOn;
+			io.emit('devices', getDeviceList());
+		}
+		if(value<=0.5) {
+			led.off();
+			getDeviceById('night').state = led.isOn;
+			io.emit('devices', getDeviceList());
+		}
 	});
 
 	var button = new five.Button({pin:8, isPullup:true});
